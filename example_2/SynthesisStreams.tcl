@@ -1,6 +1,6 @@
 open_project example2
 open_solution example2_streams
-set_part xcku115-flvb2104-2-e 
+set_part xcku5p-sfvb784-3-e 
 add_files -cflags "-DHLSLIB_SYNTHESIS -DUSE_STREAMS -std=c++11 -I../hlslib/include" "example2.cpp" 
 set_top Entry 
 create_clock -period 250MHz -name default
