@@ -7,18 +7,13 @@ constexpr int P = N;
 void NaiveGEMM(const float A[], const float B[], float C[]) {
 
   for (int n = 0; n < N; ++n) {
-    float acc[P];
-    for (int m = 0; m < M; ++m) {
-      for (int p = 0; p < P; ++p) {
-        #pragma HLS PIPELINE II=1
-        const auto prev = (m == 0) ? 0 : acc[p];
-        acc[p] = prev + A[n*M + m] * B[m*P + p];
-        #pragma HLS DEPENDENCE variable=acc inter false
-      }
-    }
     for (int p = 0; p < P; ++p) {
-      #pragma HLS PIPELINE II=1
-      C[n*P + p] = acc[p];
+      float acc = 0;
+      for (int m = 0; m < M; ++m) {
+        #pragma HLS PIPELINE II=1
+        acc += A[n*M + m] * B[m*P + p];
+      }
+      C[n*P + p] = acc;
     }
   }
 
