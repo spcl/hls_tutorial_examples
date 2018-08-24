@@ -3,10 +3,10 @@
 #include "hlslib/Stream.h"
 using namespace hlslib;
 
-constexpr int kSize = 64;
+constexpr int kSize = 1024;
 constexpr int kWidth = 4; 
-constexpr int kTileSizeN = 8;
-constexpr int kTileSizeP = 16;
+constexpr int kTileSizeN = 16;
+constexpr int kTileSizeP = 32;
 static_assert(kSize % kTileSizeN == 0, "Size must be divisable by tile size");
 static_assert(kSize % (kTileSizeP * kWidth) == 0,
               "Size must be divisable by tile size");
@@ -37,21 +37,21 @@ void Compute(Stream<float> &a_in, Stream<float> &a_out,
         // Buffer own value and forward columns to saturate all PEs
         Buffer_A: for (int n = 0; n < kTileSizeN - d; ++n) {
           #pragma HLS PIPELINE
-          a_buffer = ReadBlocking(a_in); 
+          a_buffer = a_in.Pop(); 
           if (n < kTileSizeN - d - 1) {
-            WriteBlocking(a_out, a_buffer); 
+            a_out.Push(a_buffer); 
           }
         }
 
         // Stream row of B and apply it to the stored value of A 
         StreamB: for (int tp = 0; tp < kTileSizeP; ++tp) {
           #pragma HLS PIPELINE
-          const auto b_read = ReadBlocking(b_in);
+          const auto b_read = b_in.Pop();
           const auto c_prev = (m > 0) ? c_buffer[tp] : Vec_t(0.0);
           c_buffer[tp] = c_prev + a_buffer * b_read;
           #pragma HLS DEPENDENCE inter variable=c_buffer false
           if (d < kTileSizeN - 1) {
-            WriteBlocking(b_out, b_read);
+            b_out.Push(b_read);
           }
         }
 
@@ -64,11 +64,11 @@ void Compute(Stream<float> &a_in, Stream<float> &a_out,
           #pragma HLS LOOP_FLATTEN
           Vec_t c_val;
           if (d > 0 && tn > 0) {
-            c_val = c_in.ReadBlocking();
+            c_val = c_in.Pop();
           } else {
             c_val = c_buffer[tp];
           }
-          WriteBlocking(c_out, c_val);
+          c_out.Push(c_val);
         }
       }
 
@@ -108,7 +108,7 @@ ReadA_Block_N:
           #pragma HLS LOOP_FLATTEN
           #pragma HLS PIPELINE
           const auto read = a[GetAIndex(bn, tn, m)];
-          WriteBlocking(a_pipe, read);
+          a_pipe.Push(read);
         }
       }
     }
@@ -125,8 +125,8 @@ ReadBMemory_Block_N:
       ReadBMemory_P:
         for (int tp = 0; tp < kTileSizeP; ++tp) {
           #pragma HLS LOOP_FLATTEN
-          #pragma HLS PIPELINE
-          WriteBlocking(b_pipe, b[GetBIndex(bp, m, tp)]);
+          #pragma HLS PIPELINE II=1
+          b_pipe.Push(b[GetBIndex(bp, m, tp)]);
         }
       }
     }
@@ -145,7 +145,7 @@ WriteCMemory_Block_N:
         for (int tp = 0; tp < kTileSizeP; ++tp) {
           #pragma HLS LOOP_FLATTEN
           #pragma HLS PIPELINE
-          c[GetCIndex(bn, bp, tn, tp)] = ReadBlocking(c_pipe);
+          c[GetCIndex(bn, bp, tn, tp)] = c_pipe.Pop();
         }
       }
     }
@@ -185,7 +185,7 @@ void Entry(float const a[], Vec_t const b[], Vec_t c[]) {
 }
 
 // ---------------------------------------------------------------------------
-// Host side code
+// Frame code 
 // ---------------------------------------------------------------------------
 
 #ifndef HLSLIB_SYNTHESIS
