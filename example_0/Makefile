@@ -1,7 +1,7 @@
 all: synthesis
 
 synthesis:
-	vivado_hls -f Synthesis.tcl && echo ""
+	vivado_hls -f Synthesis.tcl
 	cp hls/solution/syn/report/InitiationInterval_csynth.rpt report.rpt
 
 clean:
