@@ -2,7 +2,7 @@
 #include <random>
 #include <vector>
 
-#include "example4.h"
+#include "Example4.h"
 
 void Reference(float const in[], float out[]) {
   float tmp[N];
