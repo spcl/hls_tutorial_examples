@@ -2,20 +2,20 @@ all: synthesis
 
 synthesis:
 	vivado_hls -f Synthesis.tcl
-	cp hls/example2/syn/report/Stencil2D_csynth.rpt report.rpt
+	cp hls/Example2/syn/report/Stencil2D_csynth.rpt report.rpt
 
 synthesis_buffered:
 	vivado_hls -f SynthesisBuffered.tcl
-	cp hls_buffered/example2/syn/report/Stencil2D_csynth.rpt report_buffered.rpt
+	cp hls_buffered/Example2/syn/report/Stencil2D_csynth.rpt report_buffered.rpt
 
 synthesis_streams:
 	vivado_hls -f SynthesisStreams.tcl
-	cp hls_streams/example2/syn/report/Stencil2D_csynth.rpt report_streams.rpt
+	cp hls_streams/Example2/syn/report/Stencil2D_csynth.rpt report_streams.rpt
 
-test: example2.cpp entry.cpp test.cpp
+test: Example2.cpp Entry.cpp Test.cpp
 	@VIVADO_HLS_DIR=$(dirname $(dirname $(which vivado_hls)))
-	c++ test.cpp example2.cpp entry.cpp -std=c++11 -I../hlslib/include -I$(VIVADO_HLS_DIR)/include -lpthread -o example2
-	./example2
+	c++ Test.cpp Example2.cpp Entry.cpp -std=c++11 -I../hlslib/include -I$(VIVADO_HLS_DIR)/include -lpthread -o Example2
+	./Example2
 
 clean:
 	rm -r hls || true
@@ -25,6 +25,6 @@ clean:
 	rm report.rpt || true
 	rm report_buffered.rpt || true
 	rm report_streams.rpt || true
-	rm example2
+	rm Example2
 
 .PHONY: all clean

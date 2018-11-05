@@ -1,4 +1,4 @@
-#include "example2.h"
+#include "Example2.h"
 
 #include <algorithm>
 #include <iostream>

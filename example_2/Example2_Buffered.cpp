@@ -1,4 +1,4 @@
-#include "example2.h" // N and M are defined here
+#include "Example2.h" // N and M are defined here
 
 void Stencil2D(float const memory_in[N * M], float memory_out[N * M]) {
 
