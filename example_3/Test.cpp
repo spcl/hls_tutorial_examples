@@ -3,7 +3,7 @@
 #include <vector>
 #include <random>
 
-#include "example3.h" // Defines N and M
+#include "Example3.h" // Defines N and M
 
 void Reference(float const in[], float out[]) {
   for (int i = 1; i < N - 1; ++i) {
@@ -39,6 +39,7 @@ int main() {
       }
     }
   }
+  std::cout << "Test ran successfully.\n";
 
   return 0;
 }

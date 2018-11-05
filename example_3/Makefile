@@ -2,16 +2,16 @@ all: synthesis
 
 synthesis:
 	vivado_hls -f Synthesis.tcl
-	cp hls/example3/syn/report/Stencil2D_csynth.rpt report.rpt
+	cp hls/Example3/syn/report/Stencil2D_csynth.rpt report.rpt
 
 synthesis_time:
 	vivado_hls -f SynthesisTime.tcl
-	cp hls_time/example3/syn/report/Stencil2D_csynth.rpt report_time.rpt
+	cp hls_time/Example3/syn/report/Stencil2D_csynth.rpt report_time.rpt
 
-test: example3.cpp entry.cpp test.cpp
+test: Example3.cpp Entry.cpp Test.cpp
 	@VIVADO_HLS_DIR=$(dirname $(dirname $(which vivado_hls)))
-	c++ test.cpp example3.cpp entry.cpp -std=c++11 -I../hlslib/include -I$(VIVADO_HLS_DIR)/include -lpthread -o example3
-	./example3
+	c++ Test.cpp Example3.cpp Entry.cpp -std=c++11 -I../hlslib/include -I$(VIVADO_HLS_DIR)/include -lpthread -o Example3
+	./Example3
 
 clean:
 	rm -r hls || true
@@ -19,6 +19,6 @@ clean:
 	rm vivado_hls.log || true
 	rm report.rpt || true
 	rm report_time.rpt || true
-	rm example3
+	rm Example3
 
 .PHONY: all clean

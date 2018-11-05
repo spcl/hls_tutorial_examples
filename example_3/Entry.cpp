@@ -1,4 +1,4 @@
-#include "example3.h"
+#include "Example3.h"
 
 void Entry(float const *in, float *out) {
   #pragma HLS INTERFACE m_axi port=in bundle=gmem0 offset=slave 
