@@ -25,6 +25,6 @@ clean:
 	rm report.rpt || true
 	rm report_buffered.rpt || true
 	rm report_streams.rpt || true
-	rm Example2
+	rm Example2 || true
 
 .PHONY: all clean

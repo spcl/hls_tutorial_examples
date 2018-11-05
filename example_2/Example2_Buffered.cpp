@@ -30,8 +30,8 @@ void Stencil2D(float const memory_in[N * M], float memory_out[N * M]) {
 
       above[j] = center[j];
       center[j] = below;
-      #pragma HLS DEPENDENCE variable=above inter false
-      #pragma HLS DEPENDENCE variable=center inter false
+      #pragma HLS DEPENDENCE variable=above false
+      #pragma HLS DEPENDENCE variable=center false
 
       memory_out[i * M + j] = average;
     }

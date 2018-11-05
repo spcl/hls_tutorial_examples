@@ -12,9 +12,9 @@ void MatrixMultiplication(const float A[], const float B[], float C[]) {
 
       for (int m = 0; m < M; ++m) {
         #pragma HLS PIPELINE II=1
-        const float prev = (m == 0) ? 0 : acc[k]; // Automatic "reset" during
-        acc[k] = prev + a * B[k*M + m];           // first iteration of M-loop
-        #pragma HLS DEPENDENCE variable=acc inter false
+        const float prev = (k == 0) ? 0 : acc[m]; // Automatic "reset" during
+        acc[m] = prev + a * B[k*M + m];           // first iteration of M-loop
+        #pragma HLS DEPENDENCE variable=acc false
       }
 
     }

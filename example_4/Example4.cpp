@@ -4,6 +4,7 @@
 // Compute function/processing element
 void Simple1DStencil(Stream<float> &stream_in, Stream<float> &stream_out,
                      int d) {
+
   // Registers
   float left = stream_in.Pop();
   float center = stream_in.Pop();
