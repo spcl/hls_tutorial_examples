@@ -1,4 +1,4 @@
-#include "example0.h"
+void InitiationInterval(float const *a_mem, float const *b_mem, float *c_mem);
 
 void Entry(float const *a_mem, float const *b_mem, float *c_mem) {
   #pragma HLS INTERFACE m_axi port=a_mem offset=slave bundle=gmem0
