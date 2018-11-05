@@ -1,4 +1,6 @@
 hls
+hls_solution
 *.mov
 *.out
 *.log
+*.rpt
