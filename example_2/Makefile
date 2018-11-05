@@ -1,17 +1,30 @@
-all:
+all: synthesis
+
+synthesis:
 	vivado_hls -f Synthesis.tcl
+	cp hls/example2/syn/report/Stencil2D_csynth.rpt report.rpt
 
-buffered:
+synthesis_buffered:
 	vivado_hls -f SynthesisBuffered.tcl
+	cp hls_buffered/example2/syn/report/Stencil2D_csynth.rpt report_buffered.rpt
 
-streams:
+synthesis_streams:
 	vivado_hls -f SynthesisStreams.tcl
+	cp hls_streams/example2/syn/report/Stencil2D_csynth.rpt report_streams.rpt
 
-test:
-	clang++ example2.cpp -std=c++11 -I../hlslib/include -I/opt/Xilinx/Vivado_HLS/2017.2/include -lpthread -o example2.out
-	./example2.out
+test: example2.cpp entry.cpp test.cpp
+	@VIVADO_HLS_DIR=$(dirname $(dirname $(which vivado_hls)))
+	c++ test.cpp example2.cpp entry.cpp -std=c++11 -I../hlslib/include -I$(VIVADO_HLS_DIR)/include -lpthread -o example2
+	./example2
 
 clean:
-	rm -r example2 || true
-	rm example2.out || true
+	rm -r hls || true
+	rm -r hls_buffered || true
+	rm -r hls_streams || true
 	rm vivado_hls.log || true
+	rm report.rpt || true
+	rm report_buffered.rpt || true
+	rm report_streams.rpt || true
+	rm example2
+
+.PHONY: all clean
