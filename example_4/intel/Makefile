@@ -25,6 +25,7 @@ run_test: test emulated
 
 clean:
 	rm -rf Example4/ || true
+	rm -rf emulated_Example4/ || true
 	rm -f *Example4*.ao* || true
 	rm -rf Example4*.temp || true
 
