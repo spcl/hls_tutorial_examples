@@ -4,7 +4,6 @@
 //Channels
 channel float systolicChannels[D+1] __attribute__((depth(1)));
 
-
 __kernel void ReadMemory(__global float * const in )
 {
 	for (int i = 0; i < N; ++i) 
