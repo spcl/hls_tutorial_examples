@@ -33,8 +33,8 @@ __kernel void Simple1DStencil()
 	float prev[2];	//left and center elements
 	// for(int i=0;i<2;i++)
 		// prev[i] = read_channel_intel(systolicChannels[d]);
-	while(1)
-	{
+	//while(1)
+	//{
 	  	for (int i = d ; i < N - d; ++i) {
 	  		float in = read_channel_intel(systolicChannels[d]);
 	  		if(i<d+2)
@@ -60,5 +60,5 @@ __kernel void Simple1DStencil()
 		   	}
 	    		
 	  	}
-  	}
+  	//}
 }

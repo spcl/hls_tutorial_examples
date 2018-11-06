@@ -63,7 +63,6 @@
     //set kernel args and run
     kernels[0].setArg(0,sizeof(cl_mem),&in_buff);
     kernels[1].setArg(0,sizeof(cl_mem),&out_buff);
-    std::cout << "Launching kernels" <<std::endl;
     queues[0].enqueueTask(kernels[0]);
     queues[1].enqueueTask(kernels[1]);
 

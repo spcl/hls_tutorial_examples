@@ -3,3 +3,7 @@ hls
 *.out
 *.log
 *.rpt
+*.aoco
+*.aocx
+*.temp
+*.aocr
