@@ -4,7 +4,7 @@
 __kernel void Stencil2D(__global float const * restrict memory_in, __global float *restrict memory_out) {
 
   //Intel is able to pipeline these loops
-  //by reading the three elements with a single load
+  //but it performs three loads (one per element)
 
   for (int i = 1; i < N - 1; ++i) {
     for (int j = 0; j < M; ++j) {
