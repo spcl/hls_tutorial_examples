@@ -15,6 +15,11 @@ report: Example5.cl Example5.h
 	$(AOCXX) -v -board=$(BOARD) -rtl $< -report
 	cp -r Example5/reports ./
 
+report_reordered: Example5_Reordered.cl Example5.h
+	$(AOCXX) -v -board=$(BOARD) -rtl $< -report
+	rm -fr report_reordered || true
+	cp -r Example5_Reordered/reports ./report_reordered
+
 emulated: Example5.cl Example5.h
 	$(AOCXX) $(AOCXXFLAGS) -o EmulatedExample5.aocx Example5.cl 
 
@@ -31,6 +36,7 @@ clean:
 	rm -rf Example5*.temp || true
 	rm TestExample5 || true
 	rm -rf report* || true
+	rm -rf Example5_Reordered/ ||true
 
 
 
