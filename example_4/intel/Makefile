@@ -22,6 +22,7 @@ test: Test.cpp Example4.cl
 	$(CXX) Test.cpp $(CXXFLAGS) -I../../intel_ocl_utils $(AOCL_COMPILE_CONFIG) $(AOCL_LINK_CONFIG) -o TestExample4
 
 run_test: test emulated
+	LD_LIBRARY_PATH=$(INTELFPGAOCLSDKROOT)/board/s5_ref/linux64/lib:$(INTELFPGAOCLSDKROOT)/host/linux64/lib:$(LD_LIBRARY_PATH) \
 	env CL_CONTEXT_EMULATOR_DEVICE_INTELFPGA=1 ./TestExample4 EmulatedExample4.aocx
 
 clean:

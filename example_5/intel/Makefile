@@ -25,6 +25,7 @@ emulated: Example5.cl Example5.h
 	$(AOCXX) $(AOCXXFLAGS) -o EmulatedExample5.aocx Example5.cl 
 
 test: Test.cpp Example5.cl
+	LD_LIBRARY_PATH=$(INTELFPGAOCLSDKROOT)/board/s5_ref/linux64/lib:$(INTELFPGAOCLSDKROOT)/host/linux64/lib:$(LD_LIBRARY_PATH) \
 	$(CXX) Test.cpp $(CXXFLAGS) -I../../intel_ocl_utils $(AOCL_COMPILE_CONFIG) $(AOCL_LINK_CONFIG) -o TestExample5
 
 run_test: test emulated
