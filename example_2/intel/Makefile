@@ -1,7 +1,7 @@
-CXX		= g++
-AOCXX	= aoc
+CXX     = g++
+AOCXX   = aoc
 CXXFLAGS= -std=c++11 -g
-BOARD 	= a10gx
+BOARD 	= s5_ref
 AOCXXFLAGS  = -march=emulator -board=$(BOARD) 
 # OpenCL compile and link flags.
 AOCL_COMPILE_CONFIG := $(shell aocl compile-config )
@@ -12,11 +12,13 @@ AOCL_LINK_CONFIG := $(shell aocl link-config )
 all: report
 
 report: Example2.cl 
-	$(AOCXX) -v -board=$(BOARD) -rtl $< -report
+	$(AOCXX) -v -board=$(BOARD) -c $< -report
+	rm -rf reports || true
 	cp -r Example2/reports .
 
 report_buffered: Example2_Buffered.cl
-	$(AOCXX) -v -board=$(BOARD) -rtl $< -report
+	$(AOCXX) -v -board=$(BOARD) -c $< -report
+	rm -rf reports_buffered || true
 	cp -r Example2_Buffered/reports ./reports_buffered
 
 

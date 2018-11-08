@@ -7,6 +7,7 @@ __kernel void MatrixMultiplication(__global TYPE_T const* restrict A, __global T
     TYPE_T acc[M]; // Buffer an output row of C
 
     //If M is sufficiently larger, we can pipeline this loop
+    //by ignoring dependencies over acc
     #pragma ivdep array(acc)
     for (int k = 0; k < K; ++k) { // Collapsed dimension moved out
 

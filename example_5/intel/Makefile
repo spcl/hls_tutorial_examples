@@ -1,7 +1,7 @@
-CXX		= g++
-AOCXX	= aoc
+CXX	    = g++
+AOCXX   = aoc
 CXXFLAGS= -std=c++11 -g
-BOARD 	= a10gx
+BOARD 	= s5_ref
 AOCXXFLAGS  = -march=emulator -board=$(BOARD) 
 # OpenCL compile and link flags.
 AOCL_COMPILE_CONFIG := $(shell aocl compile-config )
@@ -9,14 +9,15 @@ AOCL_LINK_CONFIG := $(shell aocl link-config )
 
 .PHONY: all clean
 
-all: report
+all: report report_reordered
 
 report: Example5.cl Example5.h
-	$(AOCXX) -v -board=$(BOARD) -rtl $< -report
+	$(AOCXX) -v -board=$(BOARD) -c $< -report
+	rm -rf reports || true
 	cp -r Example5/reports ./
 
 report_reordered: Example5_Reordered.cl Example5.h
-	$(AOCXX) -v -board=$(BOARD) -rtl $< -report
+	$(AOCXX) -v -board=$(BOARD) -c $< -report
 	rm -fr report_reordered || true
 	cp -r Example5_Reordered/reports ./report_reordered
 

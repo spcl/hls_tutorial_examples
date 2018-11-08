@@ -1,7 +1,7 @@
-CXX		= g++
-AOCXX	= aoc
+CXX     = g++
+AOCXX   = aoc
 CXXFLAGS= -std=c++11 -g
-BOARD 	= p520_max_sg280l
+BOARD 	= s5_ref
 AOCXXFLAGS  = -march=emulator -board=$(BOARD) 
 # OpenCL compile and link flags.
 AOCL_COMPILE_CONFIG := $(shell aocl compile-config )
@@ -12,7 +12,8 @@ AOCL_LINK_CONFIG := $(shell aocl link-config )
 all: report
 
 report: Example1.cl 
-	$(AOCXX) -v -board=$(BOARD) -rtl $< -report
+	$(AOCXX) -board=$(BOARD) -c $< -report
+	rm -rf reports || true
 	cp -r Example1/reports .
 
 clean:
