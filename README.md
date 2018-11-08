@@ -13,3 +13,6 @@ Each example is equipped with a simple makefile, which typically includes the ta
 ### Intel FPGA
 
 To run high-level synthesis and generate the performance and utilization report for the Intel FPGA examples, simple makefiles are provided, assuming that the [Intel FPGA OpenCL SDK](https://www.intel.com/content/www/us/en/software/programmable/sdk-for-opencl/overview.html) is installed and on the path. Download these tools requires registering a (free) account with Intel.
+
+Makefiles typically includes the targets `report` and `run_test`.
+
