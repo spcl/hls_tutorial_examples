@@ -2,11 +2,11 @@ all: synthesis
 
 synthesis:
 	vivado_hls -f Synthesis.tcl
-	cp hls/Example3/syn/report/Stencil2D_csynth.rpt report.rpt
+	cp hls/example3/syn/report/Stencil2D_csynth.rpt report.rpt
 
 synthesis_time:
 	vivado_hls -f SynthesisTime.tcl
-	cp hls_time/Example3/syn/report/Stencil2D_csynth.rpt report_time.rpt
+	cp hls_time/example3/syn/report/Stencil2D_csynth.rpt report_time.rpt
 
 test: Example3.cpp Entry.cpp Test.cpp
 	@VIVADO_HLS_DIR=$(dirname $(dirname $(which vivado_hls)))
