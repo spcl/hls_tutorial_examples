@@ -2,11 +2,11 @@ all: synthesis
 
 synthesis:
 	vivado_hls -f Synthesis.tcl
-	cp hls/Example5/syn/report/MatrixMultiplication_csynth.rpt report.rpt
+	cp hls/example5/syn/report/MatrixMultiplication_csynth.rpt report.rpt
 
 synthesis_reordered:
 	vivado_hls -f SynthesisReordered.tcl
-	cp hls_reordered/Example5/syn/report/MatrixMultiplication_csynth.rpt report_reordered.rpt
+	cp hls_reordered/example5/syn/report/MatrixMultiplication_csynth.rpt report_reordered.rpt
 
 test: Example5.cpp Entry.cpp Test.cpp
 	@VIVADO_HLS_DIR=$(dirname $(dirname $(which vivado_hls)))
