@@ -3,7 +3,7 @@
     __kernel void Simple1DStencil(__global float const * restrict memory_in, __global float * restrict memory_out) {
 
         // The Intel compiler is able to achieve II=1 for this loop
-        // The three loads are coalesced into a single on
+        // The three loads are coalesced into a single one
 
         for (int i = 1; i < N - 1; ++i) {
 
