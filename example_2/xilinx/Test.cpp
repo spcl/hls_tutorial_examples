@@ -25,7 +25,7 @@ int main() {
   std::vector<float> out_ref(N * M);
   std::vector<float> out_res(N * M);
 
-  Entry(in.data(), out_res.data());
+  Example2(in.data(), out_res.data());
   Reference(in.data(), out_ref.data());
 
   for (int i = 0; i < N; ++i) {

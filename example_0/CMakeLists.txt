@@ -1,1 +1,1 @@
-xilinx_synthesis_target("Example0" "" "InitiationInterval")
+xilinx_synthesis_target("Example0" "" "InitiationInterval" "Entry.cpp")

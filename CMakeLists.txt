@@ -12,23 +12,43 @@ find_package(Threads REQUIRED)
 find_package(SDAccel)
 find_package(IntelFPGAOpenCL)
 
+# Set up compiling Xilinx codes
 set(XILINX_SYNTHESIS_FLAGS "-DHLSLIB_SYNTHESIS -DHLSLIB_XILINX -std=c++11 -I${CMAKE_SOURCE_DIR}/hlslib/include -I.")
+include_directories(${CMAKE_SOURCE_DIR}/hlslib/include)
 
 # Sets up a synthesis target for the given kernel
-function(xilinx_synthesis_target KERNEL_NAME ADDITIONAL_FLAGS REPORT_MODULE)
-  set(HLSLIB_PROJECT_NAME "${KERNEL_NAME}")
-  set(HLSLIB_SRC_SYNTHESIS "${CMAKE_CURRENT_SOURCE_DIR}/xilinx/${KERNEL_NAME}.cpp")
+function(xilinx_synthesis_target KERNEL_NAME ADDITIONAL_FLAGS REPORT_MODULE EXTRA_FILES)
+  string(TOLOWER ${KERNEL_NAME} KERNEL_NAME_LOWER)
+  set(HLSLIB_PROJECT_NAME "${KERNEL_NAME_LOWER}")
+  set(HLSLIB_SRC_SYNTHESIS)
+  string(REPLACE " " ";" EXTRA_FILES "${EXTRA_FILES}")
+  foreach(CODE_FILE ${KERNEL_NAME}.cpp ${EXTRA_FILES})
+    set(HLSLIB_SRC_SYNTHESIS "${HLSLIB_SRC_SYNTHESIS}
+        ${CMAKE_CURRENT_SOURCE_DIR}/xilinx/${CODE_FILE}")
+  endforeach()
   set(HLSLIB_ENTRY_FUNCTION "${KERNEL_NAME}")
   set(HLSLIB_TARGET_CLOCK "200")
   set(HLSLIB_PART_NAME "${XILINX_PART_NAME}")
   set(HLSLIB_SYNTHESIS_FLAGS ${XILINX_SYNTHESIS_FLAGS})
   configure_file(${CMAKE_SOURCE_DIR}/hlslib/xilinx_test/scripts/Synthesis.tcl.in
                  Synthesize${KERNEL_NAME}.tcl)
-  add_custom_target(synthesize_${KERNEL_NAME}
+  add_custom_target(synthesize_${KERNEL_NAME_LOWER}
     COMMAND ${SDAccel_VIVADO_HLS} -f Synthesize${KERNEL_NAME}.tcl 
     POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy
-    ${CMAKE_CURRENT_BINARY_DIR}/${HLSLIB_PROJECT_NAME}/${HLSLIB_PART_NAME}/syn/report/${REPORT_MODULE}_csynth.rpt
-    ${CMAKE_CURRENT_BINARY_DIR}/report.rpt) 
+    ${CMAKE_CURRENT_BINARY_DIR}/${HLSLIB_PROJECT_NAME}/${HLSLIB_PART_NAME}/syn/report/${REPORT_MODULE_LOWER}_csynth.rpt
+    ${CMAKE_CURRENT_BINARY_DIR}/report_${KERNEL_NAME}.rpt) 
+endfunction()
+
+# Builds a testbench that can run Vivado HLS C++ kernels in software simulation
+function(xilinx_testbench CPP_FILES KERNEL_NAME)
+  string(REPLACE " " ";" CPP_FILES "${CPP_FILES}")
+  set(CODE_FILES)
+  foreach(CODE_FILE ${KERNEL_NAME}.cpp ${CPP_FILES})
+    set(CODE_FILES ${CODE_FILES}
+        ${CMAKE_CURRENT_SOURCE_DIR}/xilinx/${CODE_FILE})
+  endforeach()
+  add_executable(Test${KERNEL_NAME} ${CODE_FILES})
+  target_link_libraries(Test${KERNEL_NAME} ${CMAKE_THREAD_LIBS_INIT} ${SDAccel_LIBRARIES})
 endfunction()
 
 # Sets up a SDAccel kernel build target for the given kernel
@@ -78,3 +98,5 @@ function(sdaccel_target KERNEL_NAME ADDITIONAL_FLAGS)
 endfunction()
 
 add_subdirectory(example_0)
+add_subdirectory(example_1)
+add_subdirectory(example_2)
