@@ -1,9 +1,7 @@
-
 // Matrix dimensions
-#define N 32
-#define M N
-#define K N
+#define DIM_N 32
+#define DIM_M DIM_N
+#define DIM_K DIM_N
 
-// Replication factors in depth (D) and width (W)
-#define D 8
-#define W 4
+// Replication factors in depth
+#define PAR 8

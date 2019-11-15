@@ -147,7 +147,6 @@ function(intel_testbench CPP_FILES KERNEL_NAME)
 endfunction()
 
 
-
 add_subdirectory(example_0)
 add_subdirectory(example_1)
 add_subdirectory(example_2)
