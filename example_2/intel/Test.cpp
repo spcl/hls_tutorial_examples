@@ -1,11 +1,10 @@
-
 #include <algorithm>
 #include <iostream>
-#include <ocl_utils.hpp>
 #include <random>
 #include <vector>
 
 #include "Example2.h"
+#include "ocl_utils.hpp"
 
 void Reference(float const in[], float out[]) {
   for (int i = 1; i < DIM_N - 1; ++i) {

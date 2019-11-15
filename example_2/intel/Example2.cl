@@ -9,14 +9,14 @@ __kernel void Stencil2D(__global float const *restrict memory_in,
   for (int i = 1; i < DIM_N - 1; ++i) {
     for (int j = 0; j < DIM_M; ++j) {
 
-      const float above = memory_in[(i - 1) * M + j];
-      const float center = memory_in[i * M + j];
-      const float below = memory_in[(i + 1) * M + j];
+      const float above = memory_in[(i - 1) * DIM_M + j];
+      const float center = memory_in[i * DIM_M + j];
+      const float below = memory_in[(i + 1) * DIM_M + j];
 
       const float factor = 0.3333f;
       const float average = factor * (above + center + below);
 
-      memory_out[i * M + j] = average;
+      memory_out[i * DIM_M + j] = average;
     }
   }
 }
