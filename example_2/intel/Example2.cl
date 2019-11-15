@@ -1,4 +1,4 @@
-#include "Example2.h" // N and M are defined here
+#include "Example2.h" // DIM_N and DIM_M are defined here
 
 __kernel void Stencil2D(__global float const *restrict memory_in,
                         __global float *restrict memory_out) {
@@ -6,8 +6,8 @@ __kernel void Stencil2D(__global float const *restrict memory_in,
   // Intel is able to pipeline these loops
   // but it performs three loads (one per element)
 
-  for (int i = 1; i < N - 1; ++i) {
-    for (int j = 0; j < M; ++j) {
+  for (int i = 1; i < DIM_N - 1; ++i) {
+    for (int j = 0; j < DIM_M; ++j) {
 
       const float above = memory_in[(i - 1) * M + j];
       const float center = memory_in[i * M + j];

@@ -1,2 +1,4 @@
-#define N 32
-#define M 32
+#pragma once
+
+#define DIM_N 32
+#define DIM_M 32

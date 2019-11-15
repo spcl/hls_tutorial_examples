@@ -15,7 +15,9 @@ find_package(IntelFPGAOpenCL)
 
 # Set up compiling Xilinx codes
 set(XILINX_SYNTHESIS_FLAGS "-DHLSLIB_SYNTHESIS -DHLSLIB_XILINX -std=c++11 -I${CMAKE_SOURCE_DIR}/hlslib/include -I.")
-include_directories(${SDAccel_INCLUDE_DIRS} ${CMAKE_SOURCE_DIR}/hlslib/include)
+include_directories(${SDAccel_INCLUDE_DIRS} ${IntelFPGAOpenCL_INCLUDE_DIRS}
+                    ${CMAKE_SOURCE_DIR}/hlslib/include
+                    ${CMAKE_SOURCE_DIR}/intel_ocl_utils)
 
 enable_testing()
 
@@ -53,9 +55,10 @@ function(xilinx_testbench CPP_FILES KERNEL_NAME)
       set(CODE_FILES ${CODE_FILES}
           ${CMAKE_CURRENT_SOURCE_DIR}/xilinx/${CODE_FILE})
     endforeach()
-    add_executable(Test${KERNEL_NAME} ${CODE_FILES})
-    target_link_libraries(Test${KERNEL_NAME} ${CMAKE_THREAD_LIBS_INIT} ${SDAccel_LIBRARIES})
-    add_test(Test${KERNEL_NAME} Test${KERNEL_NAME})
+    add_executable(Test${KERNEL_NAME}Xilinx ${CODE_FILES})
+    target_link_libraries(Test${KERNEL_NAME}Xilinx ${CMAKE_THREAD_LIBS_INIT}
+                          ${SDAccel_LIBRARIES})
+    add_test(Test${KERNEL_NAME}Xilinx Test${KERNEL_NAME}Xilinx)
   endif()
 endfunction()
 
@@ -113,9 +116,28 @@ function(intel_synthesis_target KERNEL_NAME)
     string(TOLOWER ${KERNEL_NAME} KERNEL_NAME_LOWER)
     add_custom_target(synthesize_${KERNEL_NAME_LOWER}_intel
         COMMAND ${IntelFPGAOpenCL_AOC} -board=${INTEL_FPGA_BOARD}
-          -v -rtl -report ${CMAKE_CURRENT_SOURCE_DIR}/intel/${KERNEL_NAME}.cl) 
+          -v -march=emulator
+          -report ${CMAKE_CURRENT_SOURCE_DIR}/intel/${KERNEL_NAME}.cl
+          -o ${CMAKE_CURRENT_SOURCE_DIR}/${KERNEL_NAME}.aocx) 
   endif()
 endfunction()
+
+# Builds a testbench that can run Intel FPGA OpenCL kernels in emulation 
+function(intel_testbench CPP_FILES KERNEL_NAME)
+  if(SDAccel_FOUND)
+    string(REPLACE " " ";" CPP_FILES "${CPP_FILES}")
+    set(CODE_FILES)
+    foreach(CODE_FILE ${CPP_FILES})
+      set(CODE_FILES ${CODE_FILES}
+          ${CMAKE_CURRENT_SOURCE_DIR}/intel/${CODE_FILE})
+    endforeach()
+    add_executable(Test${KERNEL_NAME} ${CODE_FILES})
+    target_link_libraries(Test${KERNEL_NAME} ${CMAKE_THREAD_LIBS_INIT}
+                          ${IntelFPGAOpenCL_LIBRARIES})
+    add_test(Test${KERNEL_NAME}Intel Test${KERNEL_NAME}Intel)
+  endif()
+endfunction()
+
 
 
 add_subdirectory(example_0)
