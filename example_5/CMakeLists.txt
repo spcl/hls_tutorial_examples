@@ -1,3 +1,7 @@
 xilinx_synthesis_target("Example5" "" "MatrixMultiplication" "Entry.cpp")
 xilinx_synthesis_target("Example5_Reordered" "" "MatrixMultiplication" "Entry.cpp")
 xilinx_testbench("Test.cpp Entry.cpp" "Example5")
+intel_synthesis_target("Example5")
+intel_testbench("Test.cpp" "Example5")
+intel_synthesis_target("Example5_Reordered")
+intel_testbench("Test.cpp" "Example5_Reordered")

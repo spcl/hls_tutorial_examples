@@ -6,13 +6,13 @@ __kernel void MatrixMultiplication(__global TYPE_T const *restrict A,
 
   // With double precision, Intel Compiler is no longer able
   // to pipeline th loops with II = 1
-  for (int n = 0; n < N; ++n) {
-    for (int m = 0; m < M; ++m) {
+  for (int n = 0; n < DIM_N; ++n) {
+    for (int m = 0; m < DIM_M; ++m) {
       TYPE_T acc = 0;
-      for (int k = 0; k < K; ++k) {
-        acc += A[n * K + k] * B[k * M + m];
+      for (int k = 0; k < DIM_K; ++k) {
+        acc += A[n * DIM_K + k] * B[k * DIM_M + m];
       }
-      C[n * M + m] = acc;
+      C[n * DIM_M + m] = acc;
     }
   }
 }
