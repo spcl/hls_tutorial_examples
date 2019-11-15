@@ -117,6 +117,10 @@ function(intel_synthesis_target KERNEL_NAME)
     string(TOLOWER ${KERNEL_NAME} KERNEL_NAME_LOWER)
     add_custom_target(synthesize_${KERNEL_NAME_LOWER}_intel
         COMMAND ${IntelFPGAOpenCL_AOC} -board=${INTEL_FPGA_BOARD}
+          -v -rtl
+          -report ${CMAKE_CURRENT_SOURCE_DIR}/intel/${KERNEL_NAME}.cl) 
+    add_custom_target(kernel_${KERNEL_NAME_LOWER}_intel
+        COMMAND ${IntelFPGAOpenCL_AOC} -board=${INTEL_FPGA_BOARD}
           -v -march=emulator
           -report ${CMAKE_CURRENT_SOURCE_DIR}/intel/${KERNEL_NAME}.cl
           -o ${CMAKE_CURRENT_BINARY_DIR}/${KERNEL_NAME}.aocx) 
@@ -141,7 +145,7 @@ function(intel_testbench CPP_FILES KERNEL_NAME)
              ${CMAKE_CURRENT_BINARY_DIR}/Test${KERNEL_NAME}Intel
              ${CMAKE_CURRENT_BINARY_DIR}/${KERNEL_NAME}.aocx)
     add_dependencies(Test${KERNEL_NAME}Intel
-                     synthesize_${KERNEL_NAME_LOWER}_intel)
+                     kernel_${KERNEL_NAME_LOWER}_intel)
   endif()
 endfunction()
 
