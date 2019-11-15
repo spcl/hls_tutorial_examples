@@ -14,7 +14,7 @@ find_package(IntelFPGAOpenCL)
 
 # Set up compiling Xilinx codes
 set(XILINX_SYNTHESIS_FLAGS "-DHLSLIB_SYNTHESIS -DHLSLIB_XILINX -std=c++11 -I${CMAKE_SOURCE_DIR}/hlslib/include -I.")
-include_directories(${CMAKE_SOURCE_DIR}/hlslib/include)
+include_directories(${SDAccel_INCLUDE_DIRS} ${CMAKE_SOURCE_DIR}/hlslib/include)
 
 enable_testing()
 
@@ -106,3 +106,4 @@ add_subdirectory(example_2)
 add_subdirectory(example_3)
 add_subdirectory(example_4)
 add_subdirectory(example_5)
+add_subdirectory(example_6)
