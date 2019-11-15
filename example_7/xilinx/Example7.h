@@ -15,4 +15,4 @@ using Vec_t = hlslib::DataPack<float, W>;
 static_assert(N % D == 0, "Size must be divisable by tile size");
 static_assert(M % (TM * W) == 0, "Size must be divisable by tile size");
 
-void Entry(float const a[], Vec_t const b[], Vec_t c[]);
+void Example7(float const a[], Vec_t const b[], Vec_t c[]);

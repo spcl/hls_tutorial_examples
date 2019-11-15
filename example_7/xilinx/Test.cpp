@@ -6,7 +6,6 @@
 #include "Example7.h"
 
 void Reference(float const a[], float const b[], float c[]) {
-
   for (int n = 0; n < N; ++n) {
     for (int m = 0; m < M; ++m) {
       c[n * M + m] = 0;
@@ -18,7 +17,6 @@ void Reference(float const a[], float const b[], float c[]) {
 }
 
 int main() {
-
   std::vector<float> a(N * K);
   std::vector<float> b(K * M);
   std::vector<float> c(N * M);
@@ -31,8 +29,8 @@ int main() {
   std::for_each(b.begin(), b.end(), [&](float &i) { i = dist(rng); });
 
   // Run simulation
-  Entry(a.data(), reinterpret_cast<Vec_t const *>(&b[0]),
-        reinterpret_cast<Vec_t *>(&c[0]));
+  Example7(a.data(), reinterpret_cast<Vec_t const *>(&b[0]),
+           reinterpret_cast<Vec_t *>(&c[0]));
 
   // Reference implementation for comparing the result
   Reference(a.data(), b.data(), c_ref.data());

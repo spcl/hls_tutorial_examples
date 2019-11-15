@@ -120,7 +120,7 @@ void WriteC(Stream<Vec_t> &c_pipe, Vec_t c[]) {
   }
 }
 
-void Entry(float const a[], Vec_t const b[], Vec_t c[]) {
+void Example7(float const a[], Vec_t const b[], Vec_t c[]) {
 
   #pragma HLS INTERFACE m_axi port=a offset=slave bundle=gmem0
   #pragma HLS INTERFACE m_axi port=b offset=slave bundle=gmem1
