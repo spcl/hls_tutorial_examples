@@ -16,6 +16,8 @@ find_package(IntelFPGAOpenCL)
 set(XILINX_SYNTHESIS_FLAGS "-DHLSLIB_SYNTHESIS -DHLSLIB_XILINX -std=c++11 -I${CMAKE_SOURCE_DIR}/hlslib/include -I.")
 include_directories(${CMAKE_SOURCE_DIR}/hlslib/include)
 
+enable_testing()
+
 # Sets up a synthesis target for the given kernel
 function(xilinx_synthesis_target KERNEL_NAME ADDITIONAL_FLAGS REPORT_MODULE EXTRA_FILES)
   string(TOLOWER ${KERNEL_NAME} KERNEL_NAME_LOWER)
@@ -35,8 +37,8 @@ function(xilinx_synthesis_target KERNEL_NAME ADDITIONAL_FLAGS REPORT_MODULE EXTR
   add_custom_target(synthesize_${KERNEL_NAME_LOWER}
     COMMAND ${SDAccel_VIVADO_HLS} -f Synthesize${KERNEL_NAME}.tcl 
     POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy
-    ${CMAKE_CURRENT_BINARY_DIR}/${HLSLIB_PROJECT_NAME}/${HLSLIB_PART_NAME}/syn/report/${REPORT_MODULE_LOWER}_csynth.rpt
-    ${CMAKE_CURRENT_BINARY_DIR}/report_${KERNEL_NAME}.rpt) 
+    ${CMAKE_CURRENT_BINARY_DIR}/${HLSLIB_PROJECT_NAME}/${HLSLIB_PART_NAME}/syn/report/${REPORT_MODULE}_csynth.rpt
+    ${CMAKE_CURRENT_BINARY_DIR}/report_${KERNEL_NAME_LOWER}.rpt) 
 endfunction()
 
 # Builds a testbench that can run Vivado HLS C++ kernels in software simulation
@@ -49,6 +51,7 @@ function(xilinx_testbench CPP_FILES KERNEL_NAME)
   endforeach()
   add_executable(Test${KERNEL_NAME} ${CODE_FILES})
   target_link_libraries(Test${KERNEL_NAME} ${CMAKE_THREAD_LIBS_INIT} ${SDAccel_LIBRARIES})
+  add_test(Test${KERNEL_NAME} Test${KERNEL_NAME})
 endfunction()
 
 # Sets up a SDAccel kernel build target for the given kernel
@@ -100,3 +103,4 @@ endfunction()
 add_subdirectory(example_0)
 add_subdirectory(example_1)
 add_subdirectory(example_2)
+add_subdirectory(example_3)

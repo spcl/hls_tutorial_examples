@@ -9,4 +9,4 @@ constexpr int T = 10;
 
 void Stencil2D(float const memory_in[N * M], float memory_out[N * M]);
 
-void Entry(float const *in, float *out);
+void Example3(float const *in, float *out);
