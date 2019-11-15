@@ -1,18 +1,55 @@
-### Xilinx
+_Updated for SC'19 in Denver, CO._
 
-After cloning this repository, make sure you clone the [hlslib](https://github.com/definelicht/hlslib) submodule dependency, by executing the following command:
+### Content
 
+These are examples used in the tutorial _Productive Parallel Programming on FPGA
+with High-Level Synthesis_, given at PPoPP'18, SC'18, SC'19, and HiPEAC'20.
+
+For comprehensive coverage of HLS transformations for HPC, we refer to our work
+_Transformations of High-Level Synthesis Codes for High-Performance Computing_,
+[available on arXiv](https://arxiv.org/abs/1805.08288) [1]. 
+
+### Dependencies 
+
+These examples depend on [hlslib](https://github.com/definelicht/hlslib) as a
+submodule [2]. Make sure you clone with the `--recursive` flag, or run `git
+submodule update --init` after cloning.
+
+All examples use CMake to configure and build both Xilinx and Intel kernels. The
+configuration relies on scripts to find the Xilinx and/or Intel tools on your
+system by looking for the `xocc` and `aoc` binaries, respectively. To ensure
+that the tools are found, make sure these are on your `PATH`.
+
+### Building and running
+
+To build the examples, create a build folder and configure it using CMake:
+
+```bash
+mkdir build
+cd build
+cmake ..
 ```
-git submodule update --init
+
+Depending on your installation of the Intel FPGA tools, you might have to
+specify a board package available to your installation, e.g.,
+`-DINTEL_FPGA_BOARD=p520_hpc_sg280l`, to build the Intel emulation kernels.
+
+Each example has one or more synthesis targets (we recommend using a shell that
+can autocomplete GNU make targets). For example, from your build directory:
+
+```bash
+cd example_0
+make synthesize_example0
 ```
 
-To run high-level synthesis, the `vivado_hls` tool must be available on the commandline. This can be downloaded from the Xilinx website, either as part of the [Vivado Design Suite](https://www.xilinx.com/support/download/index.html/content/xilinx/en/downloadNav/vivado-design-tools/) or of [SDAccel](https://www.xilinx.com/support/download/index.html/content/xilinx/en/downloadNav/sdx-development-environments.html). Download the tools requires registering a (free) account with Xilinx.
+Each Xilinx synthesis target will also copy a `report.rpt`-file into the build
+directory, which you can inspect to get more detailed information about the
+resulting architecture.
 
-Each example is equipped with a simple makefile, which typically includes the targets `synthesis` and `test`. To run high-level synthesis on the code sample, simply run `make` in the appropriate folder.
+Intel synthesis targets are suffixed with `_intel`, and are not available for all
+examples. Reports are generated in a subdirectory named after the kernel, e.g., `Example2/reports`. 
 
-### Intel FPGA
+### References
 
-To run high-level synthesis and generate the performance and utilization report for the Intel FPGA examples, simple makefiles are provided, assuming that the [Intel FPGA OpenCL SDK](https://www.intel.com/content/www/us/en/software/programmable/sdk-for-opencl/overview.html) is installed and on the path. Download these tools requires registering a (free) account with Intel.
-
-Makefiles typically includes the targets `report` and `run_test`.
-
+- [1] de Fine Licht, Johannes, and Besta, Maciej, and Meierhans, Simon, and Hoefler, Torsten. _"Transformations of High-Level Synthesis Codes for High-Performance Computing"_. arXiv preprint [arXiv:1805.08288](https://arxiv.org/abs/1805.08288) (2019).
+- [2] de Fine Licht, Johannes, and Hoefler, Torsten. _"hlslib: Software Engineering for Hardware Design"_. arXiv preprint [arXiv:1910.04436](https://arxiv.org/abs/1910.04436) (2019).
