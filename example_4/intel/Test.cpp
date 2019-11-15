@@ -1,10 +1,11 @@
+#include <hlslib/intel/OpenCL.h>
+
 #include <algorithm>
 #include <iostream>
 #include <random>
 #include <vector>
 
 #include "Example4.h"
-#include "ocl_utils.hpp"
 
 void Reference(float const in[], float out[]) {
   float tmp[DIM_N];
@@ -31,51 +32,40 @@ int main(int argc, char *argv[]) {
     return -1;
   }
 
-  float *in, *out_res;
-  posix_memalign((void **)&in, IntelFPGAOCLUtils::AOCL_ALIGNMENT,
-                 DIM_N * sizeof(float));
-  posix_memalign((void **)&out_res, IntelFPGAOCLUtils::AOCL_ALIGNMENT,
-                 DIM_N * sizeof(float));
+  std::vector<float, hlslib::ocl::AlignedAllocator<float, 4096>> in(DIM_N);
+  std::vector<float, hlslib::ocl::AlignedAllocator<float, 4096>> out_res(DIM_N);
 
   // init data
   std::random_device rd;
   std::default_random_engine rng(time(NULL));
   std::uniform_real_distribution<float> dist;
-  std::for_each(in, in + DIM_N, [&](float &i) { i = dist(rng); });
+  std::for_each(in.begin(), in.end(), [&](float &i) { i = dist(rng); });
 
   // init OpenCL environment
-  cl::Platform platform;
-  cl::Device device;
-  cl::Context context;
-  cl::Program program;
-  std::vector<std::string> kernel_names = {"ReadMemory", "WriteMemory"};
-  std::vector<cl::Kernel> kernels;
-  std::vector<cl::CommandQueue> queues;
-  IntelFPGAOCLUtils::initEnvironment(platform, device, context, program,
-                                     std::string(argv[1]), kernel_names,
-                                     kernels, queues);
+  hlslib::ocl::Context context;
+
+  auto program = context.MakeProgram(argv[1]);
 
   // Allocate and copy data to FPGA
-  cl::Buffer in_buff(context, CL_MEM_READ_ONLY, DIM_N * sizeof(float));
-  cl::Buffer out_buff(context, CL_MEM_WRITE_ONLY, DIM_N * sizeof(float));
-  queues[0].enqueueWriteBuffer(in_buff, CL_TRUE, 0, DIM_N * sizeof(float), in);
+  auto in_buff = context.MakeBuffer<float, hlslib::ocl::Access::read>(
+      in.cbegin(), in.cend());
+  auto out_buff = context.MakeBuffer<float, hlslib::ocl::Access::write>(DIM_N);
 
-  // set kernel args and run
-  kernels[0].setArg(0, sizeof(cl_mem), &in_buff);
-  kernels[1].setArg(0, sizeof(cl_mem), &out_buff);
-  queues[0].enqueueTask(kernels[0]);
-  queues[1].enqueueTask(kernels[1]);
+  auto kernel_read = program.MakeKernel("ReadMemory", in_buff);
+  auto kernel_write = program.MakeKernel("WriteMemory", out_buff);
 
-  queues[0].finish();
-  queues[1].finish();
+  // Execute kernel
+  auto future_read = kernel_read.ExecuteTaskAsync();
+  auto future_write = kernel_write.ExecuteTaskAsync();
+  future_read.get();
+  future_write.get();
 
   // get data back
-  queues[0].enqueueReadBuffer(out_buff, CL_TRUE, 0, DIM_N * sizeof(float),
-                              out_res);
+  out_buff.CopyToHost(out_res.begin());
 
   // check
-  float *out_ref = new float[DIM_N]();
-  Reference(in, out_ref);
+  std::vector<float> out_ref(DIM_N);
+  Reference(in.data(), out_ref.data());
 
   for (int i = 0; i < DIM_N; ++i) {
     const auto diff = std::abs(out_ref[i] - out_res[i]);
@@ -87,8 +77,5 @@ int main(int argc, char *argv[]) {
   }
   std::cout << "Test ran successfully.\n";
 
-  delete out_ref;
-  free(in);
-  free(out_res);
   return 0;
 }

@@ -1,10 +1,11 @@
+#include <hlslib/intel/OpenCL.h>
+
 #include <algorithm>
 #include <iostream>
 #include <random>
 #include <vector>
 
 #include "Example2.h"
-#include "ocl_utils.hpp"
 
 void Reference(float const in[], float out[]) {
   for (int i = 1; i < DIM_N - 1; ++i) {
@@ -22,51 +23,39 @@ int main(int argc, char *argv[]) {
     return -1;
   }
 
-  float *in, *out_res;
-  posix_memalign((void **)&in, IntelFPGAOCLUtils::AOCL_ALIGNMENT,
-                 DIM_N * DIM_M * sizeof(float));
-  posix_memalign((void **)&out_res, IntelFPGAOCLUtils::AOCL_ALIGNMENT,
-                 DIM_N * DIM_M * sizeof(float));
+  std::vector<float, hlslib::ocl::AlignedAllocator<float, 4096>> in(DIM_N *
+                                                                    DIM_M);
+  std::vector<float, hlslib::ocl::AlignedAllocator<float, 4096>> out_res(DIM_N *
+                                                                         DIM_M);
 
   std::random_device rd;
   std::default_random_engine rng;
   std::uniform_real_distribution<float> dist;
-  std::for_each(in, in + DIM_N * DIM_M, [&](float &i) { i = dist(rng); });
+  std::for_each(in.begin(), in.end(), [&](float &i) { i = dist(rng); });
 
-  float *out_ref = new float[DIM_N * DIM_M]();
+  std::vector<float> out_ref(DIM_N * DIM_M);
 
   // init OpenCL environment
-  cl::Platform platform;
-  cl::Device device;
-  cl::Context context;
-  cl::Program program;
-  std::vector<std::string> kernel_names = {"Stencil2D"};
-  std::vector<cl::Kernel> kernels;
-  std::vector<cl::CommandQueue> queues;
-  IntelFPGAOCLUtils::initEnvironment(platform, device, context, program,
-                                     std::string(argv[1]), kernel_names,
-                                     kernels, queues);
+  hlslib::ocl::Context context;
+
+  auto program = context.MakeProgram(argv[1]);
 
   // Allocate and copy data to FPGA
-  cl::Buffer in_buff(context, CL_MEM_READ_ONLY, DIM_N * DIM_M * sizeof(float));
-  cl::Buffer out_buff(context, CL_MEM_WRITE_ONLY,
-                      DIM_N * DIM_M * sizeof(float));
-  queues[0].enqueueWriteBuffer(in_buff, CL_TRUE, 0,
-                               DIM_N * DIM_M * sizeof(float), in);
+  auto in_buff = context.MakeBuffer<float, hlslib::ocl::Access::read>(
+      in.cbegin(), in.cend());
+  auto out_buff =
+      context.MakeBuffer<float, hlslib::ocl::Access::write>(DIM_N * DIM_M);
 
-  // set kernel args and run
-  kernels[0].setArg(0, sizeof(cl_mem), &in_buff);
-  kernels[0].setArg(1, sizeof(cl_mem), &out_buff);
-  queues[0].enqueueTask(kernels[0]);
+  auto kernel = program.MakeKernel("Stencil2D", in_buff, out_buff);
 
-  queues[0].finish();
+  // Run kernel
+  kernel.ExecuteTask();
 
-  // get data back
-  queues[0].enqueueReadBuffer(out_buff, CL_TRUE, 0,
-                              DIM_N * DIM_M * sizeof(float), out_res);
+  // Copy data back
+  out_buff.CopyToHost(out_res.begin());
 
   // correctness check
-  Reference(in, out_ref);
+  Reference(in.data(), out_ref.data());
 
   for (int i = 0; i < DIM_N; ++i) {
     for (int j = 0; j < DIM_M; ++j) {

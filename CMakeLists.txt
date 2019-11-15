@@ -16,8 +16,7 @@ find_package(IntelFPGAOpenCL)
 # Set up compiling Xilinx codes
 set(XILINX_SYNTHESIS_FLAGS "-DHLSLIB_SYNTHESIS -DHLSLIB_XILINX -std=c++11 -I${CMAKE_SOURCE_DIR}/hlslib/include -I.")
 include_directories(${SDAccel_INCLUDE_DIRS} ${IntelFPGAOpenCL_INCLUDE_DIRS}
-                    ${CMAKE_SOURCE_DIR}/hlslib/include
-                    ${CMAKE_SOURCE_DIR}/intel_ocl_utils)
+                    ${CMAKE_SOURCE_DIR}/hlslib/include)
 # Required to link Intel OpenCL
 set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl,--disable-new-dtags")
 
@@ -60,7 +59,7 @@ function(xilinx_testbench CPP_FILES KERNEL_NAME)
     add_executable(Test${KERNEL_NAME}Xilinx ${CODE_FILES})
     target_link_libraries(Test${KERNEL_NAME}Xilinx ${CMAKE_THREAD_LIBS_INIT}
                           ${SDAccel_LIBRARIES})
-    # add_test(Test${KERNEL_NAME}Xilinx Test${KERNEL_NAME}Xilinx)
+    add_test(Test${KERNEL_NAME}Xilinx Test${KERNEL_NAME}Xilinx)
   endif()
 endfunction()
 
