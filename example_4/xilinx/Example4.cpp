@@ -41,12 +41,12 @@ void ReadMemory(float const *in, Stream<float> &stream) {
 // Writes from the tail of the pipeline
 void WriteMemory(Stream<float> &stream, float *out) {
   for (int i = D; i < N - D; ++i) { // Take shrinkage into account
-#pragma HLS PIPELINE II=1
+    #pragma HLS PIPELINE II=1
     out[i] = stream.Pop();
   }
 }
 
-void Entry(float const *in, float *out) {
+void Example4(float const *in, float *out) {
   #pragma HLS INTERFACE m_axi port=in bundle=gmem0 offset=slave
   #pragma HLS INTERFACE m_axi port=out bundle=gmem1 offset=slave
   #pragma HLS INTERFACE s_axilite port=in

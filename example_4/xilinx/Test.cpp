@@ -34,7 +34,7 @@ int main() {
   std::vector<float> out_ref(N);
   std::vector<float> out_res(N);
 
-  Entry(in.data(), out_res.data());
+  Example4(in.data(), out_res.data());
   Reference(in.data(), out_ref.data());
 
   for (int i = 0; i < N; ++i) {
