@@ -1,5 +1,5 @@
-#include "hlslib/Simulation.h"
 #include "Example4.h"
+#include "hlslib/Simulation.h"
 
 // Compute function/processing element
 void Simple1DStencil(Stream<float> &stream_in, Stream<float> &stream_out,
@@ -11,7 +11,7 @@ void Simple1DStencil(Stream<float> &stream_in, Stream<float> &stream_out,
 
   for (int i = d + 2; i < N - d; ++i) {
     #pragma HLS PIPELINE II=1
-      
+
     const auto in = stream_in.Pop();
 
     // Read wavefront
@@ -19,16 +19,15 @@ void Simple1DStencil(Stream<float> &stream_in, Stream<float> &stream_out,
 
     // Compute
     constexpr float factor = 0.3333;
-    const auto res = factor * (left + center + right); 
+    const auto res = factor * (left + center + right);
 
     // Update registers
     left = center;
-    center = right; 
+    center = right;
 
-    // Write downstream 
+    // Write downstream
     stream_out.Push(res);
   }
-
 }
 
 // Reads into the head of the pipeline
@@ -42,7 +41,7 @@ void ReadMemory(float const *in, Stream<float> &stream) {
 // Writes from the tail of the pipeline
 void WriteMemory(Stream<float> &stream, float *out) {
   for (int i = D; i < N - D; ++i) { // Take shrinkage into account
-    #pragma HLS PIPELINE II=1
+#pragma HLS PIPELINE II=1
     out[i] = stream.Pop();
   }
 }
@@ -62,7 +61,7 @@ void Entry(float const *in, float *out) {
 
   // HLSLIB_DATAFLOW_FUNCTION emulates concurrent execution in hardware by
   // wrapping function calls in std::thread
- 
+
   HLSLIB_DATAFLOW_FUNCTION(ReadMemory, in, pipe[0]);
 
   for (int d = 0; d < D; ++d) {

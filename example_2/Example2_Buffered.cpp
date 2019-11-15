@@ -23,7 +23,7 @@ void Stencil2D(float const memory_in[N * M], float memory_out[N * M]) {
     for (int j = 0; j < M; ++j) {
       #pragma HLS PIPELINE II=1
 
-      const auto below = memory_in[(i + 1)*M + j];
+      const auto below = memory_in[(i + 1) * M + j];
 
       constexpr float factor = 0.3333;
       const auto average = factor * (above[j] + center[j] + below);
@@ -36,5 +36,4 @@ void Stencil2D(float const memory_in[N * M], float memory_out[N * M]) {
       memory_out[i * M + j] = average;
     }
   }
-
 }

@@ -1,7 +1,7 @@
 #include <algorithm>
+#include <iostream>
 #include <random>
 #include <vector>
-#include <iostream>
 
 #include "Example6.h"
 

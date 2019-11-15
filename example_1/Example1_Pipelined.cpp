@@ -20,6 +20,4 @@ void Simple1DStencil(float const *memory_in, float *memory_out) {
 
     memory_out[i] = average;
   }
-
 }
-

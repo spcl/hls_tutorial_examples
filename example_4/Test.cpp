@@ -40,8 +40,8 @@ int main() {
   for (int i = 0; i < N; ++i) {
     const auto diff = std::abs(out_ref[i] - out_res[i]);
     if (diff > 1e-4) {
-      std::cerr << "Mismatch at " << i << ": " << out_res[i]
-                << " (should be " << out_ref[i] << ")." << std::endl;
+      std::cerr << "Mismatch at " << i << ": " << out_res[i] << " (should be "
+                << out_ref[i] << ")." << std::endl;
       return 1;
     }
   }

@@ -1,7 +1,7 @@
 #include <algorithm>
+#include <iostream>
 #include <random>
 #include <vector>
-#include <iostream>
 
 #include "Example5.h"
 
@@ -40,9 +40,8 @@ int main() {
   for (int i = 0; i < N * M; ++i) {
     const auto diff = std::abs(c_ref[i] - c[i]);
     if (diff >= 1e-3) {
-      std::cout << "Mismatch at (" << i / M << ", " << i % M 
-                << "): " << c[i] << " (should be " << c_ref[i]
-                << ").\n";
+      std::cout << "Mismatch at (" << i / M << ", " << i % M << "): " << c[i]
+                << " (should be " << c_ref[i] << ").\n";
       return 1;
     }
   }

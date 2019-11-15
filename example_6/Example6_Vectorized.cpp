@@ -12,12 +12,12 @@ void MatrixMultiplication(const float A[], const Vec_t B[], Vec_t C[]) {
       float a_buffer[D];
       for (int nd = 0; nd < D; ++nd) {
         #pragma HLS PIPELINE II=1
-        a_buffer[nd] = A[n*D*K + nd*K + k];
+        a_buffer[nd] = A[n * D * K + nd * K + k];
       }
 
       for (int m = 0; m < M / W; ++m) {
         #pragma HLS PIPELINE II=1
-        const auto b_val = B[k*(M / W) + m];
+        const auto b_val = B[k * (M / W) + m];
         for (int nd = 0; nd < D; ++nd) {
           #pragma HLS UNROLL
           const auto prev = (k > 0) ? acc[nd][m] : Vec_t(0.);
@@ -31,10 +31,8 @@ void MatrixMultiplication(const float A[], const Vec_t B[], Vec_t C[]) {
       for (int m = 0; m < M / W; ++m) {
         #pragma HLS LOOP_FLATTEN
         #pragma HLS PIPELINE II=1
-        C[n*D*(M / W) + nd*(M / W) + m] = acc[nd][m];
+        C[n * D * (M / W) + nd * (M / W) + m] = acc[nd][m];
       }
     }
-
   }
-
 }

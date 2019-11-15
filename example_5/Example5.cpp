@@ -7,10 +7,9 @@ void MatrixMultiplication(const float A[], const float B[], float C[]) {
       float acc = 0;
       for (int k = 0; k < K; ++k) {
         #pragma HLS PIPELINE II=1
-        acc += A[n*K + k] * B[k*M + m];
+        acc += A[n * K + k] * B[k * M + m];
       }
-      C[n*M + m] = acc;
+      C[n * M + m] = acc;
     }
   }
-
 }

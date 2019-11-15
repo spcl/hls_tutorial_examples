@@ -6,7 +6,7 @@ constexpr int N = 256;
 constexpr int K = 256;
 constexpr int M = 256;
 
-constexpr int W = 4; 
+constexpr int W = 4;
 constexpr int D = 8;
 constexpr int TM = 32;
 

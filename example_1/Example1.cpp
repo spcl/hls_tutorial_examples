@@ -14,14 +14,13 @@ void Simple1DStencil(float const *memory_in, float *memory_out) {
     // the loop, and use them to reduce the number of accesses from memory_in to
     // 1 per cycle.
 
-    const auto left   = memory_in[i - 1];
+    const auto left = memory_in[i - 1];
     const auto center = memory_in[i];
-    const auto right  = memory_in[i + 1];
+    const auto right = memory_in[i + 1];
 
     constexpr float factor = 0.3333;
     const auto average = factor * (left + center + right);
 
     memory_out[i] = average;
   }
-
 }

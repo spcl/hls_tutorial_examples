@@ -1,6 +1,6 @@
+#include "Example7.h"
 #include "hlslib/Simulation.h"
 #include "hlslib/Stream.h"
-#include "Example7.h"
 
 using hlslib::Stream;
 
@@ -22,16 +22,16 @@ void ProcessingElement(Stream<float> &a_in, Stream<float> &a_out,
 
         // Buffer own value and forward columns to saturate all PEs
         for (int nd = 0; nd < D - d; ++nd) {
-          #pragma HLS PIPELINE
-          a_buffer = a_in.Pop(); 
+          #pragma HLS PIPELINE II=1
+          a_buffer = a_in.Pop();
           if (nd < D - d - 1) {
-            a_out.Push(a_buffer); 
+            a_out.Push(a_buffer);
           }
         }
 
-        // Stream row of B and apply it to the stored value of A 
+        // Stream row of B and apply it to the stored value of A
         for (int tm = 0; tm < TM; ++tm) {
-          #pragma HLS PIPELINE
+          #pragma HLS PIPELINE II=1
           const auto b_read = b_in.Pop();
           const auto c_prev = (k > 0) ? c_buffer[tm] : Vec_t(0.);
           c_buffer[tm] = c_prev + a_buffer * b_read;
@@ -46,8 +46,8 @@ void ProcessingElement(Stream<float> &a_in, Stream<float> &a_out,
 
       // Write out result block
       for (int tn = 0; tn < d + 1; ++tn) { // Different for each PE
-        for (int tm = 0; tm < TM; ++tm) { 
-          #pragma HLS PIPELINE
+        for (int tm = 0; tm < TM; ++tm) {
+          #pragma HLS PIPELINE II=1
           #pragma HLS LOOP_FLATTEN
           Vec_t c_val;
           if (d > 0 && tn > 0) {
@@ -58,7 +58,6 @@ void ProcessingElement(Stream<float> &a_in, Stream<float> &a_out,
           c_out.Push(c_val);
         }
       }
-
     }
   }
 }
@@ -75,8 +74,7 @@ inline int GetBIndex(int bm, int k, int tm) {
 
 inline int GetCIndex(int bn, int bm, int tn, int tm) {
   #pragma HLS INLINE
-  return bn * D * (M / W) + tn * (M / W) +
-         bm * TM + tm;
+  return bn * D * (M / W) + tn * (M / W) + bm * TM + tm;
 }
 
 void ReadA(float const a[], Stream<float> &a_pipe) {
@@ -85,7 +83,7 @@ void ReadA(float const a[], Stream<float> &a_pipe) {
       for (int k = 0; k < K; ++k) {
         for (int tn = 0; tn < D; ++tn) {
           #pragma HLS LOOP_FLATTEN
-          #pragma HLS PIPELINE
+          #pragma HLS PIPELINE II=1
           const auto read = a[GetAIndex(bn, tn, k)];
           a_pipe.Push(read);
         }
@@ -106,7 +104,6 @@ void ReadB(Vec_t const b[], Stream<Vec_t> &b_pipe) {
       }
     }
   }
-
 }
 
 void WriteC(Stream<Vec_t> &c_pipe, Vec_t c[]) {
@@ -115,7 +112,7 @@ void WriteC(Stream<Vec_t> &c_pipe, Vec_t c[]) {
       for (int tn = 0; tn < D; ++tn) {
         for (int tm = 0; tm < TM; ++tm) {
           #pragma HLS LOOP_FLATTEN
-          #pragma HLS PIPELINE
+          #pragma HLS PIPELINE II=1
           c[GetCIndex(bn, bm, tn, tm)] = c_pipe.Pop();
         }
       }
@@ -132,7 +129,7 @@ void Entry(float const a[], Vec_t const b[], Vec_t c[]) {
   #pragma HLS INTERFACE s_axilite port=b bundle=control
   #pragma HLS INTERFACE s_axilite port=c bundle=control
   #pragma HLS INTERFACE s_axilite port=return bundle=control
-
+  
   #pragma HLS DATAFLOW
 
   Stream<float> a_pipes[D + 1];
@@ -140,14 +137,14 @@ void Entry(float const a[], Vec_t const b[], Vec_t c[]) {
   Stream<Vec_t> c_pipes[D + 1];
 
   HLSLIB_DATAFLOW_INIT();
-  HLSLIB_DATAFLOW_FUNCTION(ReadA, a, a_pipes[0]); 
-  HLSLIB_DATAFLOW_FUNCTION(ReadB, b, b_pipes[0]); 
+  HLSLIB_DATAFLOW_FUNCTION(ReadA, a, a_pipes[0]);
+  HLSLIB_DATAFLOW_FUNCTION(ReadB, b, b_pipes[0]);
   for (int d = 0; d < D; ++d) {
     #pragma HLS UNROLL
     HLSLIB_DATAFLOW_FUNCTION(ProcessingElement, a_pipes[d], a_pipes[d + 1],
                              b_pipes[d], b_pipes[d + 1], c_pipes[d],
                              c_pipes[d + 1], d);
   }
-  HLSLIB_DATAFLOW_FUNCTION(WriteC, c_pipes[D], c); 
+  HLSLIB_DATAFLOW_FUNCTION(WriteC, c_pipes[D], c);
   HLSLIB_DATAFLOW_FINALIZE();
 }
