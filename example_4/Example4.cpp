@@ -1,5 +1,5 @@
 #include "Example4.h"
-#include "hlslib/Simulation.h"
+#include "hlslib/xilinx/Simulation.h"
 
 // Compute function/processing element
 void Simple1DStencil(Stream<float> &stream_in, Stream<float> &stream_out,

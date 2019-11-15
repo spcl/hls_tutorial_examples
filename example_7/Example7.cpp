@@ -1,6 +1,6 @@
 #include "Example7.h"
-#include "hlslib/Simulation.h"
-#include "hlslib/Stream.h"
+#include "hlslib/xilinx/Simulation.h"
+#include "hlslib/xilinx/Stream.h"
 
 using hlslib::Stream;
 

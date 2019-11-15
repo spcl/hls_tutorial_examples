@@ -1,6 +1,6 @@
 #pragma once
 
-#include "hlslib/DataPack.h"
+#include "hlslib/xilinx/DataPack.h"
 
 constexpr int N = 256;
 constexpr int K = 256;

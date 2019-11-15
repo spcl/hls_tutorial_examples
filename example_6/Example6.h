@@ -1,6 +1,6 @@
 #pragma once
 
-#include "hlslib/DataPack.h"
+#include "hlslib/xilinx/DataPack.h"
 
 // Matrix dimensions
 constexpr int N = 1000;
