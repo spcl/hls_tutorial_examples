@@ -8,3 +8,4 @@ hls
 *.aocx
 *.temp
 *.aocr
+.ycm_extra_conf.py

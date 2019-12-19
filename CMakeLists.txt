@@ -15,8 +15,7 @@ find_package(IntelFPGAOpenCL)
 
 # Set up compiling Xilinx codes
 set(XILINX_SYNTHESIS_FLAGS "-DHLSLIB_SYNTHESIS -DHLSLIB_XILINX -std=c++11 -I${CMAKE_SOURCE_DIR}/hlslib/include -I.")
-include_directories(${Vitis_INCLUDE_DIRS} ${IntelFPGAOpenCL_INCLUDE_DIRS}
-                    ${CMAKE_SOURCE_DIR}/hlslib/include)
+include_directories(${CMAKE_SOURCE_DIR}/hlslib/include)
 # Required to link Intel OpenCL
 set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl,--disable-new-dtags")
 
@@ -57,6 +56,7 @@ function(xilinx_testbench CPP_FILES KERNEL_NAME)
           ${CMAKE_CURRENT_SOURCE_DIR}/xilinx/${CODE_FILE})
     endforeach()
     add_executable(Test${KERNEL_NAME}Xilinx ${CODE_FILES})
+    target_include_directories(Test${KERNEL_NAME}Xilinx PUBLIC ${Vitis_INCLUDE_DIRS}) 
     target_link_libraries(Test${KERNEL_NAME}Xilinx ${CMAKE_THREAD_LIBS_INIT}
                           ${Vitis_LIBRARIES})
     add_test(Test${KERNEL_NAME}Xilinx Test${KERNEL_NAME}Xilinx)
@@ -104,6 +104,7 @@ function(sdaccel_target KERNEL_NAME ADDITIONAL_FLAGS)
         ${VPP_COMMAND} ${KERNEL_NAME}_hw_emu.xo -o ${KERNEL_NAME}_hw_emu.xclbin) 
     endif()
     add_executable(Run${KERNEL_NAME}.exe host/Run${KERNEL_NAME}.cpp ${CMAKE_CURRENT_SOURCE_DIR}/kernels/${KERNEL_NAME}.cpp)
+    target_include_directories(Run${KERNEL_NAME}.exe ${Vitis_INCLUDE_DIRS}) 
     target_link_libraries(Run${KERNEL_NAME}.exe ${Vitis_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT})
     add_custom_target(run_${KERNEL_NAME}_hardware COMMAND ${CMAKE_CURRENT_BINARY_DIR}/Run${KERNEL_NAME}.exe hardware)
     add_custom_target(run_${KERNEL_NAME}_emulation COMMAND ${CMAKE_COMMAND} -E env XILINX_SDX=${SDACCEL_ROOT_DIR} XCL_EMULATION_MODE=hw_emu ${CMAKE_CURRENT_BINARY_DIR}/Run${KERNEL_NAME}.exe emulation)
@@ -138,6 +139,7 @@ function(intel_testbench CPP_FILES KERNEL_NAME)
           ${CMAKE_CURRENT_SOURCE_DIR}/intel/${CODE_FILE})
     endforeach()
     add_executable(Test${KERNEL_NAME}Intel ${CODE_FILES})
+    target_include_directories(Test${KERNEL_NAME}Intel PUBLIC ${IntelFPGAOpenCL_INCLUDE_DIRS})
     target_link_libraries(Test${KERNEL_NAME}Intel ${CMAKE_THREAD_LIBS_INIT}
                           ${IntelFPGAOpenCL_LIBRARIES})
     add_test(NAME Test${KERNEL_NAME}Intel COMMAND ${CMAKE_COMMAND} -E env
