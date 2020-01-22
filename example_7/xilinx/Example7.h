@@ -2,13 +2,13 @@
 
 #include "hlslib/xilinx/DataPack.h"
 
-constexpr int N = 256;
-constexpr int K = 256;
-constexpr int M = 256;
+constexpr int N = 1024;
+constexpr int K = 1024;
+constexpr int M = 1024;
 
 constexpr int W = 4;
-constexpr int D = 8;
-constexpr int TM = 32;
+constexpr int D = 4;
+constexpr int TM = 256;
 
 using Vec_t = hlslib::DataPack<float, W>;
 

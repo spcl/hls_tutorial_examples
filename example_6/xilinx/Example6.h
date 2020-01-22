@@ -3,7 +3,7 @@
 #include "hlslib/xilinx/DataPack.h"
 
 // Matrix dimensions
-constexpr int N = 256;
+constexpr int N = 1024;
 constexpr int M = N;
 constexpr int K = N;
 
