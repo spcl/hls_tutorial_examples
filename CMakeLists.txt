@@ -38,10 +38,15 @@ function(xilinx_synthesis_target KERNEL_NAME ADDITIONAL_FLAGS REPORT_MODULE EXTR
     set(HLSLIB_SYNTHESIS_FLAGS ${XILINX_SYNTHESIS_FLAGS})
     configure_file(${CMAKE_SOURCE_DIR}/hlslib/xilinx_test/scripts/Synthesis.tcl.in
                    Synthesize${KERNEL_NAME}.tcl)
+    if(Vitis_USE_VITIS_HLS)
+      set(REPORT_NAME ${KERNEL_NAME})
+    else()
+      set(REPORT_NAME ${REPORT_MODULE})
+    endif()
     add_custom_target(synthesize_${KERNEL_NAME_LOWER}
       COMMAND ${Vitis_HLS} -f Synthesize${KERNEL_NAME}.tcl 
       POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy
-      ${CMAKE_CURRENT_BINARY_DIR}/${HLSLIB_PROJECT_NAME}/${HLSLIB_PART_NAME}/syn/report/${REPORT_MODULE}_csynth.rpt
+      ${CMAKE_CURRENT_BINARY_DIR}/${HLSLIB_PROJECT_NAME}/${HLSLIB_PART_NAME}/syn/report/${REPORT_NAME}_csynth.rpt
     ${CMAKE_CURRENT_BINARY_DIR}/report_${KERNEL_NAME_LOWER}.rpt) 
   endif()
 endfunction()
