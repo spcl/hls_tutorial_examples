@@ -18,6 +18,7 @@ set(XILINX_SYNTHESIS_FLAGS "-DHLSLIB_SYNTHESIS -DHLSLIB_XILINX -std=c++11 -I${CM
 include_directories(${CMAKE_SOURCE_DIR}/hlslib/include)
 # Required to link Intel OpenCL
 set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl,--disable-new-dtags")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++1y")
 
 enable_testing()
 
@@ -121,15 +122,23 @@ endfunction()
 function(intel_synthesis_target KERNEL_NAME)
   if(IntelFPGAOpenCL_FOUND)
     string(TOLOWER ${KERNEL_NAME} KERNEL_NAME_LOWER)
-    add_custom_target(synthesize_${KERNEL_NAME_LOWER}_intel
+    add_custom_command(
+        OUTPUT ${KERNEL_NAME}/reports/report.html
         COMMAND ${IntelFPGAOpenCL_AOC} -board=${INTEL_FPGA_BOARD}
           -v -rtl
-          -report ${CMAKE_CURRENT_SOURCE_DIR}/intel/${KERNEL_NAME}.cl) 
-    add_custom_target(kernel_${KERNEL_NAME_LOWER}_intel
-        COMMAND ${IntelFPGAOpenCL_AOC} -board=${INTEL_FPGA_BOARD}
-          -v -march=emulator
           -report ${CMAKE_CURRENT_SOURCE_DIR}/intel/${KERNEL_NAME}.cl
-          -o ${CMAKE_CURRENT_BINARY_DIR}/${KERNEL_NAME}.aocx) 
+        DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/intel/${KERNEL_NAME}.cl) 
+    add_custom_target(synthesize_${KERNEL_NAME_LOWER}_intel
+                      DEPENDS ${KERNEL_NAME}/reports/report.html) 
+    add_custom_command(
+        OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/${KERNEL_NAME}.aocx
+        COMMAND ${IntelFPGAOpenCL_AOC} -board=${INTEL_FPGA_BOARD}
+        -v -march=emulator
+        -report ${CMAKE_CURRENT_SOURCE_DIR}/intel/${KERNEL_NAME}.cl
+        -o ${CMAKE_CURRENT_BINARY_DIR}/${KERNEL_NAME}.aocx
+        DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/intel/${KERNEL_NAME}.cl) 
+    add_custom_target(kernel_${KERNEL_NAME_LOWER}_intel DEPENDS 
+                      ${CMAKE_CURRENT_BINARY_DIR}/${KERNEL_NAME}.aocx)
   endif()
 endfunction()
 
