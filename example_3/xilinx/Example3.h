@@ -1,8 +1,5 @@
 #pragma once
 
-#include "hlslib/xilinx/Stream.h"
-using hlslib::Stream;
-
 constexpr int N = 10;
 constexpr int M = 10;
 constexpr int T = 10;
