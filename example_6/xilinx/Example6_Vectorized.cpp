@@ -20,9 +20,8 @@ void MatrixMultiplication(const float A[], const Vec_t B[], Vec_t C[]) {
         const auto b_val = B[k * (M / W) + m];
         for (int nd = 0; nd < D; ++nd) {
           #pragma HLS UNROLL
-          const auto prev = (k > 0) ? acc[nd][m] : Vec_t(0.);
+          const auto prev = (k > 0) ? acc[nd][m] : Vec_t(static_cast<float>(0));
           acc[nd][m] = prev + a_buffer[nd] * b_val;
-          #pragma HLS DEPENDENCE variable=acc inter false
         }
       }
     }
