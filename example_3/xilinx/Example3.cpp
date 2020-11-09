@@ -1,4 +1,4 @@
-#include "Example3.h" // Defines N and M
+#include "Example3.h" // Defines N, M, and T
 
 void Stencil2D(float const memory_in[N * M], float memory_out[N * M]) {
 
@@ -6,12 +6,12 @@ void Stencil2D(float const memory_in[N * M], float memory_out[N * M]) {
   float center_buffer[M];
 
   for (int i = 0; i < M; ++i) {
-    #pragma HLS PIPELINE
+    #pragma HLS PIPELINE II=1
     above_buffer[i] = memory_in[i];
   }
 
   for (int i = 0; i < M; ++i) {
-    #pragma HLS PIPELINE
+    #pragma HLS PIPELINE II=1
     center_buffer[i] = memory_in[M + i];
   }
 
