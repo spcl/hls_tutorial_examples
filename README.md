@@ -50,5 +50,5 @@ examples. Reports are generated in a subdirectory named after the kernel, e.g., 
 
 ### References
 
-- [1] de Fine Licht, Johannes, and Besta, Maciej, and Meierhans, Simon, and Hoefler, Torsten. _"Transformations of High-Level Synthesis Codes for High-Performance Computing"_. arXiv preprint [arXiv:1805.08288](https://arxiv.org/abs/1805.08288) (2019).
-- [2] de Fine Licht, Johannes, and Hoefler, Torsten. _"hlslib: Software Engineering for Hardware Design"_. arXiv preprint [arXiv:1910.04436](https://arxiv.org/abs/1910.04436) (2019).
+- [1] Johannes de Fine Licht, Maciej Besta, Simon Meierhans, and Torsten Hoefler. _"Transformations of High-Level Synthesis Codes for High-Performance Computing."_ IEEE Transactions on Parallel and Distributed Systems (TPDS), Vol. 32, Issue 5, 2021 ([arXiv link](https://arxiv.org/abs/1805.08288)).
+- [2] Johannes de Fine Licht and Torsten Hoefler. _"hlslib: Software Engineering for Hardware Design"_. arXiv preprint [arXiv:1910.04436](https://arxiv.org/abs/1910.04436) (2019).
