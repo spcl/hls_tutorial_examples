@@ -1,9 +1,8 @@
-_Updated for SC'20._
-
 ### Content
 
 These are examples used in the tutorial _Productive Parallel Programming on FPGA
-with High-Level Synthesis_, given at PPoPP'18, SC'18, SC'19, HiPEAC'20, and SC'20.
+with High-Level Synthesis_, given at PPoPP'18, SC'18, SC'19, HiPEAC'20, SC'20,
+and ISC'21.
 
 For comprehensive coverage of HLS transformations for HPC, we refer to our work
 _Transformations of High-Level Synthesis Codes for High-Performance Computing_,
