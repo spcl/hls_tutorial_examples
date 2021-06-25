@@ -33,7 +33,7 @@ void ProcessingElement(Stream<float> &a_in, Stream<float> &a_out,
         for (int tm = 0; tm < TM; ++tm) {
           #pragma HLS PIPELINE II=1
           const auto b_read = b_in.Pop();
-          const auto c_prev = (k > 0) ? c_buffer[tm] : Vec_t(static_cast<float>(0.));
+          const auto c_prev = (k > 0) ? c_buffer[tm] : Vec_t{static_cast<float>(0.)};
           c_buffer[tm] = c_prev + a_buffer * b_read;
           #pragma HLS DEPENDENCE variable=c_buffer false
           // Forward to subsequent PE, if any
@@ -49,7 +49,7 @@ void ProcessingElement(Stream<float> &a_in, Stream<float> &a_out,
         for (int tm = 0; tm < TM; ++tm) {
           #pragma HLS PIPELINE II=1
           #pragma HLS LOOP_FLATTEN
-          Vec_t c_val;
+          Vec_t c_val{};
           if (d > 0 && tn > 0) {
             c_val = c_in.Pop();
           } else {
