@@ -5,8 +5,7 @@
 
 #include "Example5.h"
 
-void Reference(float const a[], float const b[], float c[]) {
-
+void Reference(double const a[], double const b[], double c[]) {
   for (int n = 0; n < N; ++n) {
     for (int m = 0; m < M; ++m) {
       c[n * M + m] = 0;
@@ -18,17 +17,16 @@ void Reference(float const a[], float const b[], float c[]) {
 }
 
 int main() {
-
-  std::vector<float> a(N * K);
-  std::vector<float> b(K * M);
-  std::vector<float> c(N * M);
-  std::vector<float> c_ref(N * M, 0);
+  std::vector<double> a(N * K);
+  std::vector<double> b(K * M);
+  std::vector<double> c(N * M);
+  std::vector<double> c_ref(N * M, 0);
 
   std::random_device rd;
   std::default_random_engine rng;
-  std::uniform_real_distribution<float> dist;
-  std::for_each(a.begin(), a.end(), [&](float &i) { i = dist(rng); });
-  std::for_each(b.begin(), b.end(), [&](float &i) { i = dist(rng); });
+  std::uniform_real_distribution<double> dist;
+  std::for_each(a.begin(), a.end(), [&](double &i) { i = dist(rng); });
+  std::for_each(b.begin(), b.end(), [&](double &i) { i = dist(rng); });
 
   // Run simulation
   MatrixMultiplication(a.data(), b.data(), c.data());
