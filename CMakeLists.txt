@@ -2,8 +2,7 @@ cmake_minimum_required(VERSION 3.0)
 project(hls_tutorial_examples)
 
 # Options
-set(XILINX_PART_NAME "xcvu9p-flgb2104-2-i" CACHE STRING "Part name for HLS.")
-set(XILINX_DSA_NAME "xilinx_vcu1525_dynamic_5_1" CACHE STRING "DSA string for xocc.")
+set(XILINX_PLATFORM "xilinx_u250_gen3x16_xdma_3_1_202020_1" CACHE STRING "Target vitis platform.")
 set(INTEL_FPGA_BOARD "s5_ref" CACHE STRING "Target board for aoc.")
 
 # Include find-scripts from hlslib
@@ -14,7 +13,6 @@ find_package(Vitis)
 find_package(IntelFPGAOpenCL)
 
 # Set up compiling Xilinx codes
-set(XILINX_SYNTHESIS_FLAGS "-DHLSLIB_SYNTHESIS -DHLSLIB_XILINX -std=c++11 -I${CMAKE_SOURCE_DIR}/hlslib/include -I.")
 include_directories(${CMAKE_SOURCE_DIR}/hlslib/include)
 # Required to link Intel OpenCL
 set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl,--disable-new-dtags")
@@ -23,33 +21,27 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++1y")
 enable_testing()
 
 # Sets up a synthesis target for the given kernel
-function(xilinx_synthesis_target KERNEL_NAME ADDITIONAL_FLAGS REPORT_MODULE EXTRA_FILES)
-  if(Vitis_FOUND)
-    string(TOLOWER ${KERNEL_NAME} KERNEL_NAME_LOWER)
-    set(HLSLIB_PROJECT_NAME "${KERNEL_NAME_LOWER}")
-    set(HLSLIB_SRC_SYNTHESIS)
-    string(REPLACE " " ";" EXTRA_FILES "${EXTRA_FILES}")
-    foreach(CODE_FILE ${KERNEL_NAME}.cpp ${EXTRA_FILES})
-      set(HLSLIB_SRC_SYNTHESIS "${HLSLIB_SRC_SYNTHESIS}
-          ${CMAKE_CURRENT_SOURCE_DIR}/xilinx/${CODE_FILE}")
-    endforeach()
-    set(HLSLIB_ENTRY_FUNCTION "${KERNEL_NAME}")
-    set(HLSLIB_TARGET_CLOCK "200")
-    set(HLSLIB_PART_NAME "${XILINX_PART_NAME}")
-    set(HLSLIB_SYNTHESIS_FLAGS ${XILINX_SYNTHESIS_FLAGS})
-    configure_file(${CMAKE_SOURCE_DIR}/hlslib/xilinx_test/scripts/Synthesis.tcl.in
-                   Synthesize${KERNEL_NAME}.tcl)
-    if(Vitis_USE_VITIS_HLS)
-      set(REPORT_NAME ${KERNEL_NAME})
-    else()
-      set(REPORT_NAME ${REPORT_MODULE})
-    endif()
-    add_custom_target(synthesize_${KERNEL_NAME_LOWER}
-      COMMAND ${Vitis_HLS} -f Synthesize${KERNEL_NAME}.tcl 
-      POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy
-      ${CMAKE_CURRENT_BINARY_DIR}/${HLSLIB_PROJECT_NAME}/${HLSLIB_PART_NAME}/syn/report/${REPORT_NAME}_csynth.rpt
-    ${CMAKE_CURRENT_BINARY_DIR}/report_${KERNEL_NAME_LOWER}.rpt) 
+function(xilinx_synthesis_target KERNEL_NAME REPORT_MODULE EXTRA_FILES)
+  string(TOLOWER ${KERNEL_NAME} KERNEL_NAME_LOWER)
+  foreach(CODE_FILE ${KERNEL_NAME}.cpp ${EXTRA_FILES})
+    set(KERNEL_SRC ${KERNEL_SRC} ${CMAKE_CURRENT_SOURCE_DIR}/xilinx/${CODE_FILE})
+  endforeach()
+  add_vitis_kernel(${KERNEL_NAME_LOWER}
+                   FILES ${KERNEL_SRC}
+                   KERNEL ${KERNEL_NAME}
+                   INCLUDE_DIRS ${CMAKE_SOURCE_DIR}/hlslib/include
+                                ${CMAKE_CURRENT_SOURCE_DIR}/xilinx)
+  add_vitis_program(${KERNEL_NAME_LOWER} ${XILINX_PLATFORM})
+  if(Vitis_USE_VITIS_HLS)
+    set(REPORT_NAME ${KERNEL_NAME})
+  else()
+    set(REPORT_NAME ${REPORT_MODULE})
   endif()
+  add_custom_command(
+    TARGET synthesize_${KERNEL_NAME_LOWER}
+    COMMAND ${CMAKE_COMMAND} -E copy
+            ${CMAKE_CURRENT_BINARY_DIR}/${KERNEL_NAME_LOWER}/${PROGRAM_PLATFORM_PART}/syn/report/${REPORT_NAME}_csynth.rpt
+            ${CMAKE_CURRENT_BINARY_DIR}/report_${KERNEL_NAME_LOWER}.rpt)
 endfunction()
 
 # Builds a testbench that can run Vivado HLS C++ kernels in software simulation
