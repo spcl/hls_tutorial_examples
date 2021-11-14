@@ -61,55 +61,6 @@ function(xilinx_testbench CPP_FILES KERNEL_NAME)
   endif()
 endfunction()
 
-# Sets up a Vitis kernel build target for the given kernel
-function(sdaccel_target KERNEL_NAME ADDITIONAL_FLAGS)
-  if(Vitis_FOUND)
-    set(XILINX_SYNTHESIS_FLAGS_FLAGS "${XILINX_SYNTHESIS_FLAGS} ${ADDITIONAL_FLAGS}")
-    set(VPP_COMMAND
-      -s
-      -O3
-      ${MM_VPP_FLAGS}
-      -I${CMAKE_CURRENT_SOURCE_DIR}/include
-      -I${CMAKE_SOURCE_DIR}/include
-      -I${CMAKE_CURRENT_BINARY_DIR}
-      -I${CMAKE_BINARY_DIR}
-      --kernel ${KERNEL_NAME} 
-      --platform ${XILINX_DSA_NAME}
-      --xp prop:kernel.${KERNEL_NAME}.kernel_flags="${XILINX_SYNTHESIS_FLAGS_FLAGS}"
-      --profile_kernel "data:all:all:all"
-      --profile_kernel "stall:all:all"
-      --profile_kernel "exec:all:all"
-      --max_memory_ports all)
-    if(((${Vitis_MAJOR_VERSION} LESS 2018) AND (${Vitis_MINOR_VERSION} LESS 3)) OR ${Vitis_MAJOR_VERSION} LESS 2017)
-      add_custom_target(build_${KERNEL_NAME}_hardware
-        COMMAND XILINX_PATH=${CMAKE_CURRENT_BINARY_DIR} ${Vitis_VPP} -t hw
-        ${VPP_COMMAND} ${CMAKE_CURRENT_SOURCE_DIR}/kernels/${KERNEL_NAME}.cpp -o ${KERNEL_NAME}_hw.xclbin) 
-      add_custom_target(build_${KERNEL_NAME}_hardware_emulation
-        COMMAND XILINX_PATH=${CMAKE_CURRENT_BINARY_DIR} ${Vitis_VPP} -t hw_emu -g
-        ${VPP_COMMAND} ${CMAKE_CURRENT_SOURCE_DIR}/kernels/${KERNEL_NAME}.cpp -o ${KERNEL_NAME}_hw_emu.xclbin) 
-    else()
-      add_custom_target(compile_${KERNEL_NAME}_hardware
-        COMMAND XILINX_PATH=${CMAKE_CURRENT_BINARY_DIR} ${Vitis_VPP} -c -t hw
-        ${VPP_COMMAND} ${CMAKE_CURRENT_SOURCE_DIR}/kernels/${KERNEL_NAME}.cpp -o ${KERNEL_NAME}_hw.xo) 
-      add_custom_target(link_${KERNEL_NAME}_hardware
-        COMMAND XILINX_PATH=${CMAKE_CURRENT_BINARY_DIR} ${Vitis_VPP} -l -t hw
-        ${VPP_COMMAND} ${KERNEL_NAME}_hw.xo -o ${KERNEL_NAME}_hw.xclbin) 
-      add_custom_target(compile_${KERNEL_NAME}_hardware_emulation
-        COMMAND XILINX_PATH=${CMAKE_CURRENT_BINARY_DIR} ${Vitis_VPP} -c -t hw_emu -g
-        ${VPP_COMMAND} ${CMAKE_CURRENT_SOURCE_DIR}/kernels/${KERNEL_NAME}.cpp -o ${KERNEL_NAME}_hw_emu.xo) 
-      add_custom_target(link_${KERNEL_NAME}_hardware_emulation
-        COMMAND XILINX_PATH=${CMAKE_CURRENT_BINARY_DIR} ${Vitis_VPP} -l -t hw_emu -g
-        ${VPP_COMMAND} ${KERNEL_NAME}_hw_emu.xo -o ${KERNEL_NAME}_hw_emu.xclbin) 
-    endif()
-    add_executable(Run${KERNEL_NAME}.exe host/Run${KERNEL_NAME}.cpp ${CMAKE_CURRENT_SOURCE_DIR}/kernels/${KERNEL_NAME}.cpp)
-    target_include_directories(Run${KERNEL_NAME}.exe ${Vitis_INCLUDE_DIRS}) 
-    target_link_libraries(Run${KERNEL_NAME}.exe ${Vitis_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT})
-    add_custom_target(run_${KERNEL_NAME}_hardware COMMAND ${CMAKE_CURRENT_BINARY_DIR}/Run${KERNEL_NAME}.exe hardware)
-    add_custom_target(run_${KERNEL_NAME}_emulation COMMAND ${CMAKE_COMMAND} -E env XILINX_SDX=${SDACCEL_ROOT_DIR} XCL_EMULATION_MODE=hw_emu ${CMAKE_CURRENT_BINARY_DIR}/Run${KERNEL_NAME}.exe emulation)
-    add_custom_target(run_${KERNEL_NAME}_simulation COMMAND ${CMAKE_COMMAND} -E env XCL_EMULATION_MODE=sw_emu XILINX_SDX=${SDACCEL_ROOT_DIR} ${CMAKE_CURRENT_BINARY_DIR}/Run${KERNEL_NAME}.exe simulation)
-  endif()
-endfunction()
-
 # Generate report for Intel
 function(intel_synthesis_target KERNEL_NAME)
   if(IntelFPGAOpenCL_FOUND)
